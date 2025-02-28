@@ -10,20 +10,52 @@ public class NewInputSystem : MonoBehaviour
     public PlayerInput playerInput;
     InputAction MoveAction;
 
+
     public AnimationCurve MovementCurve;
 
     private Vector2 CurrentMovementVector;
     private Vector2 TargetMovementVector;
 
+    public UnityEvent OnInteraction;
+
     // Start is called before the first frame update
-    void Start()
+    void OnEnable()
     {
         playerInput = GetComponent<PlayerInput>();
         MoveAction = playerInput.actions.FindActionMap("Base").FindAction("Movement");
-        
         MoveAction.performed += MoveAction_performed;
         MoveAction.canceled += MoveAction_canceled;
+    
+        InputAction InteractionAction = playerInput.actions.FindActionMap("Base").FindAction("Interact");
+        if(!ReferenceEquals(InteractionAction, null))
+        {
+            InteractionAction.performed += InteractionAction_performed;
+        }
+    }
+
+    private void OnDisable()
+    {
+        MoveAction.canceled -= MoveAction_canceled;
+        MoveAction.performed -= MoveAction_performed;
         
+        if (ReferenceEquals(playerInput, null))
+        {
+            Debug.LogWarning("Player Input component destroyed before Custom Input Component");
+            return;
+        }
+
+            InputAction InteractionAction = playerInput.actions.FindActionMap("Base").FindAction("Interact");
+        if (!ReferenceEquals(InteractionAction, null))
+        {
+            InteractionAction.performed -= InteractionAction_performed;
+        }
+    }
+
+    private void InteractionAction_performed(InputAction.CallbackContext obj)
+    {
+        Debug.Log("Interaction Triggered");
+
+        OnInteraction.Invoke();
     }
 
     private void MoveAction_canceled(InputAction.CallbackContext callbackContext)

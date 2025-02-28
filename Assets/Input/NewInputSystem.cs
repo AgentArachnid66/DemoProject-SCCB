@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
+// using static UnityEngine.InputSystem.InputAction;
 
 public class NewInputSystem : MonoBehaviour
 {
@@ -20,23 +22,36 @@ public class NewInputSystem : MonoBehaviour
         MoveAction = playerInput.actions.FindActionMap("Base").FindAction("Movement");
         
         MoveAction.performed += MoveAction_performed;
+        MoveAction.canceled += MoveAction_canceled;
         
+    }
+
+    private void MoveAction_canceled(InputAction.CallbackContext callbackContext)
+    {
+        CurrentMovementVector = Vector2.zero;
+        TargetMovementVector = Vector2.zero;
     }
 
     private void MoveAction_performed(InputAction.CallbackContext callbackContext)
     {
-        CurrentMovementVector = callbackContext.ReadValue<Vector2>();
+        TargetMovementVector = callbackContext.ReadValue<Vector2>();
         
-        // CurrentMovementVector = Vector2.Lerp(CurrentMovementVector, TargetMovementVector, Time.deltaTime);
-
-        Debug.Log(CurrentMovementVector);
-
-
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if(MoveAction.IsPressed())
+        {
+            float multiplier = 
+                MovementCurve.Evaluate(
+                Mathf.Clamp(Mathf.InverseLerp(0, TargetMovementVector.magnitude, CurrentMovementVector.magnitude), 0, 1));
+            
+            CurrentMovementVector = Vector2.Lerp(CurrentMovementVector, TargetMovementVector, Time.deltaTime * Mathf.Max(multiplier, 0.01f));
+            Debug.Log(CurrentMovementVector);
+            Vector3 currentMove3D = CurrentMovementVector;
+
+            gameObject.transform.SetPositionAndRotation(gameObject.transform.position + currentMove3D, gameObject.transform.rotation);
+        }
     }
 }

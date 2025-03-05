@@ -80,7 +80,7 @@ public class NewInputSystem : MonoBehaviour
                 Mathf.Clamp(Mathf.InverseLerp(0, TargetMovementVector.magnitude, CurrentMovementVector.magnitude), 0, 1));
             
             CurrentMovementVector = Vector2.Lerp(CurrentMovementVector, TargetMovementVector, Time.deltaTime * Mathf.Max(multiplier, 0.01f));
-            Debug.Log(CurrentMovementVector);
+            // Debug.Log(CurrentMovementVector);
             Vector3 currentMove3D = CurrentMovementVector;
 
             gameObject.transform.SetPositionAndRotation(gameObject.transform.position + currentMove3D, gameObject.transform.rotation);

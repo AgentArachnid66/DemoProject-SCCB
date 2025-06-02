@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -5,57 +6,46 @@ using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
 
-public interface IWeightedEdgeInterface
-{
-    public float weight { get; set; }
-
-}
 
 [System.Serializable]
 public class GraphEdge
 {
     [SerializeField]
-    public GraphNode TargetGraphNode;
+    protected GraphNode SourceGraphNode;
 
-    public void Initialise(GraphNode TargetNode)
+    [SerializeField]
+    protected GraphNode TargetGraphNode = null;
+
+
+    [SerializeField]
+    protected int weight = -1;
+
+
+    public void Initialise(GraphNode SourceNode, GraphNode TargetNode, int Weight)
     {
+        SourceGraphNode = SourceNode;
         TargetGraphNode = TargetNode;
+        weight = Weight;
+
+        if (Weight > -1 && SourceNode != null && TargetGraphNode != null && !TargetGraphNode.IsConnectedTo(SourceNode))
+        {
+            TargetGraphNode.AddEdge(TargetNode, SourceNode, Weight);
+        }
     }
-}
 
-[System.Serializable]
-public class WeightedGraphEdge : GraphEdge, IWeightedEdgeInterface
-{
-    float IWeightedEdgeInterface.weight { get => Weight; set => Weight = value; }
-
-    [SerializeField]
-    public float Weight;
-}
-
-[System.Serializable]
-public class UnDirectionalGraphEdge : GraphEdge
-{
-    public GraphNode SourceGraphNode;
-
-    public void Initialise(GraphNode Source, GraphNode Target)
+    public int GetEdgeWeight()
     {
-        SourceGraphNode = Source;
-        Initialise(Target);
+        return weight;
     }
-}
 
-[System.Serializable]
-public class WeightedUnDirectionalGraphEdge : GraphEdge, IWeightedEdgeInterface
-{
-    public GraphNode SourceGraphNode { get; private set; }
-    [SerializeField]
-    private float _weight;
-    float IWeightedEdgeInterface.weight { get => _weight; set => _weight = value; }
-
-    public void Initialise(GraphNode Source, GraphNode Target)
+    public GraphNode GetSourceNode()
     {
-        SourceGraphNode = Source;
-        Initialise(Target);
+        return SourceGraphNode;
+    }
+
+    public GraphNode GetTargetNode()
+    {
+        return TargetGraphNode;
     }
 }
 
@@ -65,70 +55,53 @@ public class GraphNode : MonoBehaviour
     public int id = -1;
 
     [SerializeField]
-    public List<GraphEdge> edges = new List<GraphEdge>();
-    [SerializeField]
-    public List<WeightedGraphEdge> weighted_edges = new List<WeightedGraphEdge>();
+    protected List<GraphEdge> edges = new List<GraphEdge>();
+
 
     private void Start()
     {
         id = GraphManager.Instance.RegisterNode(this);
-    }
+        Debug.Log($"Registered Node as {id}");
 
-    [ContextMenu("Add Directional Edge")]
-    public void AddDirectionalEdge()
-    {
-        edges.Add(new GraphEdge());
-    }
-
-    [ContextMenu("Add UnDirectional Edge")]
-    public void AddUnDirectionalEdge()
-    {
-        edges.Add(new UnDirectionalGraphEdge());
-    }
-
-    [ContextMenu("Add Weighted Directional Edge")]
-    public void AddWeightedDirectionalEdge()
-    {
-        WeightedGraphEdge edge = new WeightedGraphEdge();
-        edges.Add(edge);
-        weighted_edges.Add(edge);
-    }
-
-    [ContextMenu("Add Weighted UnDirectional Edge")]
-    public void AddWeightedUnDirectionalEdge()
-    {
-        edges.Add(new WeightedUnDirectionalGraphEdge());
-
-    }
-}
-
-[CustomEditor(typeof(GraphNode))]
-public class TestManagerInspector : Editor
-{
-    public override void OnInspectorGUI()
-    {
-        GraphNode graphNode = (GraphNode)target;
-        for (int i = 0; i < graphNode.edges.Count; i++)
+        for (int i = 0; i < edges.Count; i++)
         {
-            GraphEdge test = graphNode.edges[i];
-            EditorGUILayout.LabelField("Level", test.ToString());
-            using (new EditorGUI.IndentLevelScope())
-            {
-                switch (test)
-                {
-                    case WeightedGraphEdge Weighted:
-                        {
-                            EditorGUILayout.IntField(Weighted.TargetGraphNode.id);
-
-                        }
-                        break;
-                    default:
-                        {
-                        }
-                        break;
-                }
-            };
-            EditorGUILayout.Separator();
+            edges[i].Initialise(edges[i].GetSourceNode(), edges[i].GetTargetNode(), edges[i].GetEdgeWeight());
         }
+    }
+
+    public bool IsConnectedTo(GraphNode Other)
+    {
+        for(int i = 0; i < edges.Count; i++)
+        {
+            if(edges[i].GetTargetNode() == Other)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+
+    [ContextMenu("Add Edge")]
+    public void EditorAddEdge()
+    {
+        AddEdge(this, null, 0);
+    }
+
+    public void VisitNodeDebug()
+    {
+        LTDescr descr = LeanTween.scale(gameObject, new Vector3(1.25f, 1.25f), 1f);
+    }
+
+    public void AddEdge(GraphNode Source, GraphNode Target, int weight)
+    {
+        GraphEdge edge = new GraphEdge();
+        edge.Initialise(Source, Target, weight);
+        edges.Add(edge);
+    }
+
+    public List<GraphEdge> GetEdges()
+    { 
+        return edges;
     }
 }

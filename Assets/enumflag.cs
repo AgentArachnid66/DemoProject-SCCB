@@ -19,4 +19,20 @@ public class enumflag : MonoBehaviour
 {
     public AttackType attackType = AttackType.Melee | AttackType.Fire;
 
+    void Test()
+    {
+        switch (attackType)
+        {
+            case AttackType.Fire:
+                break;
+            case AttackType.None:
+                break;
+            case AttackType.Melee:
+                break;
+            case AttackType.Ice:
+                break;
+            case AttackType.Poison:
+                break;
+        }
+    }
 }

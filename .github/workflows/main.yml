@@ -51,6 +51,8 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: Build
+      - name: Display structure of downloaded files
+        run: ls -R
       - name: Itch.io - Publish
         # You may pin to the exact commit or the version.
         # uses: KikimoraGames/itch-publish@ea06fdc7e36b34a6c4f88b379a73f3362537b998

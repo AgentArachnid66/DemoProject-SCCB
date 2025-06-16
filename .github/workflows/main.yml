@@ -1,0 +1,41 @@
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - release
+
+jobs:
+  Build-Project:
+    runs-on: ${{ fromJSON('["ubuntu-latest", "self-hosted"]')[github.repository == 'github/docs-internal'] }}
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v4.2.2
+
+      - name: Build Unity Project
+        # You may pin to the exact commit or the version.
+        # uses: game-ci/unity-builder@3b26780ddfe24a0ee2aebb0a65297ab69fc5bb4c
+        uses: game-ci/unity-builder@v4.5.0
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          # Platform that the build should target.
+          targetPlatform: WebGL 
+          # Name of the build. Should not include a file extension.
+          buildName: Release
+      - name: Store Build
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          # Artifact name
+          name: Build
+          # A file, directory or wildcard pattern that describes what to upload
+          path: build
+
+
+                
+              
+              
+                                  
+      
+          

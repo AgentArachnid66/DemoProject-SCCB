@@ -43,10 +43,27 @@ jobs:
           # A file, directory or wildcard pattern that describes what to upload
           path: build
 
-
-                
-              
-              
-                                  
-      
-          
+  Upload-To-Itch:
+    runs-on: ${{ fromJSON('["ubuntu-latest", "self-hosted"]')[github.repository == 'github/docs-internal'] }}
+    needs: Build-Project
+    steps:
+      - name: Retrieve Project
+        uses: actions/download-artifact@v4
+        with:
+          name: Build
+      - name: Itch.io - Publish
+        # You may pin to the exact commit or the version.
+        # uses: KikimoraGames/itch-publish@ea06fdc7e36b34a6c4f88b379a73f3362537b998
+        uses: KikimoraGames/itch-publish@v0.0.3
+        with:
+          # Butler API Key
+          butlerApiKey: ${{ secrets.ITCH_API }}
+          # Directory or .zip file of the game data. Zip files are slower to upload.
+          gameData: WebGL
+          # Itch.io username of the game owner. e.g. in finji/overland this would be finji.
+          itchUsername: spyderweb-studios
+          # Itch.io id of the game. e.g. in finji/overland this would be overland.
+          itchGameId: Demo
+          # Channel name of the game: https://itch.io/docs/butler/pushing.html#channel-names
+          buildChannel: WebGL
+            

@@ -45,6 +45,7 @@ jobs:
 
   Upload-To-Itch:
     runs-on: ${{ fromJSON('["ubuntu-latest", "self-hosted"]')[github.repository == 'github/docs-internal'] }}
+    needs: Build-Project
     steps:
       - name: Itch.io - Publish
         # You may pin to the exact commit or the version.
@@ -54,7 +55,7 @@ jobs:
           # Butler API Key
           butlerApiKey: ${{ secrets.ITCH_API }}
           # Directory or .zip file of the game data. Zip files are slower to upload.
-          gameData: Build
+          gameData: Build/WebGL/Release
           # Itch.io username of the game owner. e.g. in finji/overland this would be finji.
           itchUsername: SpyderwebStudios
           # Itch.io id of the game. e.g. in finji/overland this would be overland.

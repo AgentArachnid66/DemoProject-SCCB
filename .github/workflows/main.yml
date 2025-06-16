@@ -10,6 +10,17 @@ jobs:
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4.2.2
+      - name: Cache
+        uses: actions/cache@v4.2.3
+        with:
+          # A list of files, directories, and wildcard patterns to cache and restore
+          path: Library
+          # An explicit key for restoring and saving the cache
+          key: Library-Demo-WebGL
+          # An ordered multiline string listing the prefix-matched keys, that are used for restoring stale cache if no cache hit occurred for key. Note `cache-hit` returns false in this case.
+          restore-keys: |
+                    Library-Demo-
+                    Library-
 
       - name: Build Unity Project
         # You may pin to the exact commit or the version.

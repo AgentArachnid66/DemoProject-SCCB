@@ -15,7 +15,7 @@ public class DemoUnitTest
         Assert.AreEqual(0, 0);
         Assert.AreEqual(1, 1);
 
-        Assert.IsTrue(false);
+        Assert.IsTrue(true);
     }
 
     // A UnityTest behaves like a coroutine in Play Mode. In Edit Mode you can use

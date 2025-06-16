@@ -61,7 +61,7 @@ jobs:
           # Butler API Key
           butlerApiKey: ${{ secrets.ITCH_API }}
           # Directory or .zip file of the game data. Zip files are slower to upload.
-          gameData: Build
+          gameData: WebGL
           # Itch.io username of the game owner. e.g. in finji/overland this would be finji.
           itchUsername: spyderweb-studios
           # Itch.io id of the game. e.g. in finji/overland this would be overland.

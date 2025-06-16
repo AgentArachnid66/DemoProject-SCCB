@@ -142,6 +142,9 @@ public class GraphManager : MonoBehaviour
         }
     }
 }
+
+#if UNITY_EDITOR
+
 [CustomEditor(typeof(GraphManager))]
 public class TestManagerInspector : Editor
 {
@@ -206,3 +209,4 @@ public class TestManagerInspector : Editor
         if ((visibleInEditMode || Application.isPlaying) && GUILayout.Button(buttonName)) action.Invoke();
     }
 }
+#endif

@@ -10,7 +10,6 @@ public class TweenDemo : MonoBehaviour
 
     public UnityEngine.UI.Image Image;
 
-    public SceneAsset scene;
     
     // Start is called before the first frame update
     void Start()
